@@ -4,6 +4,8 @@ from os.path import dirname
 import tensorflow as tf
 
 import netvlad_tf.layers as layers
+# import tensorflow.compat.v1 as tf
+# tf.disable_v2_behavior()
 
 def defaultCheckpoint():
     return os.path.join(dirname(dirname(dirname(__file__))), 

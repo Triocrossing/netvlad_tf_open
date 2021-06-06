@@ -1,4 +1,6 @@
 import tensorflow as tf
+# import tensorflow.compat.v1 as tf
+# tf.disable_v2_behavior()
 
 def netVLAD(inputs, num_clusters, assign_weight_initializer=None, 
             cluster_initializer=None, skip_postnorm=False):

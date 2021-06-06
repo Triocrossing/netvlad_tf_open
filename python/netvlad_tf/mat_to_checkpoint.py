@@ -1,5 +1,6 @@
 import tensorflow as tf
 
+
 from netvlad_tf.net_from_mat import netFromMat
 from netvlad_tf.nets import defaultCheckpoint
 

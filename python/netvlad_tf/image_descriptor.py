@@ -3,6 +3,8 @@ import glob
 import numpy as np
 import os
 import tensorflow as tf
+# import tensorflow.compat.v1 as tf
+# tf.disable_v2_behavior() 
 
 import netvlad_tf.nets as nets
 
@@ -22,9 +24,10 @@ class ImageDescriptor(object):
         self.sess = tf.Session()
         saver.restore(self.sess, nets.defaultCheckpoint())
 
-    def describeAllJpegsInPath(self, path, batch_size, verbose=False):
+    def describeAllFilesInPath(self, path, batch_size, ext='png', verbose=False):
         ''' returns a list of descriptors '''
-        jpeg_paths = sorted(glob.glob(os.path.join(path, '*.jpg')))
+        jpeg_paths = sorted(glob.glob(os.path.join(path, '*.'+ext)))
+        print(jpeg_paths)
         descs = []
         for batch_offset in range(0, len(jpeg_paths), batch_size):
             images = []

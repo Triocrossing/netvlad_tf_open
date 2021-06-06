@@ -9,6 +9,7 @@ import scipy.io as scio
 import scipy.spatial.distance as scid
 import scipy.signal as scisig
 import tensorflow as tf
+# import tensorflow.compat.v1 as tf
 import time
 import unittest
 
@@ -16,13 +17,15 @@ from netvlad_tf.image_descriptor import ImageDescriptor
 import netvlad_tf.net_from_mat as nfm
 import netvlad_tf.precision_recall as pr
 
+# tf.disable_v2_behavior()
 #%% Init
 use_dim = 128
 
 #%% Get KITTI feats
 tf.reset_default_graph()
 imd = ImageDescriptor(is_grayscale=True)
-feats = imd.describeAllJpegsInPath('kitti/00/image_0', 4, verbose=True)
+feats = imd.describeAllJpegsInPath('/Users/triocrossing/INRIA/NOSAVE/Datasets/KITTI/00/image_2/', 4, 'png', verbose=True)
+print (feats)
 #%%
 use_feats = np.array(feats)[:, :use_dim]
 

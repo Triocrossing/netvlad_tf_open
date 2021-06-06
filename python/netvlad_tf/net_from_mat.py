@@ -3,7 +3,8 @@ import os
 from os.path import dirname
 import scipy.io as scio
 import tensorflow as tf
-
+# import tensorflow.compat.v1 as tf
+# tf.disable_v2_behavior() 
 import netvlad_tf.layers as layers
 
 #%% Spyder section for debugging.
