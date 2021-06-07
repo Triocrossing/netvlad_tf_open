@@ -29,7 +29,8 @@ class ImageDescriptor(object):
         jpeg_paths = sorted(glob.glob(os.path.join(path, '*.'+ext)))
         print(jpeg_paths)
         descs = []
-        for batch_offset in range(0, len(jpeg_paths), batch_size):
+        # for batch_offset in range(0, len(jpeg_paths), batch_size):
+        for batch_offset in range(0, 4, batch_size):
             images = []
             for i in range(batch_offset, batch_offset + batch_size):
                 if i == len(jpeg_paths):
