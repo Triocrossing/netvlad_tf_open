@@ -32,6 +32,7 @@ class ImageDescriptor(object):
         # for batch_offset in range(0, len(jpeg_paths), batch_size):
         for batch_offset in range(0, 4, batch_size):
             images = []
+            # creating batch
             for i in range(batch_offset, batch_offset + batch_size):
                 if i == len(jpeg_paths):
                     break
@@ -50,10 +51,13 @@ class ImageDescriptor(object):
                     self.net_out, feed_dict={self.tf_batch: batch}))
         return descs
 
-    def describe(self, image):
+    def describe(self, image, isSqueeze=True):
         if self.is_grayscale:
             batch = np.expand_dims(np.expand_dims(image, axis=0), axis=-1)
         else:
             batch = np.expand_dims(image, axis=0)
-        return self.sess.run(
-            self.net_out, feed_dict={self.tf_batch: batch}).squeeze()
+        if isSqueeze:
+          return self.sess.run(self.net_out, feed_dict={self.tf_batch: batch}).squeeze()
+        else:
+          return self.sess.run(self.net_out, feed_dict={self.tf_batch: batch})
+
