@@ -42,9 +42,8 @@ def bbox2(img):
   xmin, xmax = np.where(cols)[0][[0, -1]]
   # print("ymin ymax, xmin xmax")
   return img[ymin:ymax+1, xmin:xmax+1], ymin, ymax+1, xmin, xmax+1
-
-
-def createEnveloppedArrayBySP(spImg, img):
+  
+def createEnveloppedArrayBySP(spImg, img, isZeroPadding=False):
   # print(f'shape sp{np.shape(spImg)}')
   # print(f'shape img{np.shape(img)}')
   assert(np.shape(spImg)==np.shape(img))
@@ -58,12 +57,15 @@ def createEnveloppedArrayBySP(spImg, img):
     _spImg=_spImg+1
     _spImg, ymin, ymaxp1, xmin, xmaxp1 = bbox2(_spImg)    # bounding box non zero regions
     _img = _img[ymin:ymaxp1, xmin:xmaxp1]
-    _img = _img*_spImg
-    # showMat(_img,"after bb")
+    if(isZeroPadding):
+      _img = _img*_spImg
+    # print(f'shape of _img {np.shape(_img)} and shape of _spImg {np.shape(_spImg)}')
+    # showMat(_img,"after zeroPading")
     # plt.show()
     lenvImg.append(_img)
+    # exit()
   
-  print(f'found {len(lenvImg)} sp regions')
+  # print(f'found {len(lenvImg)} sp regions')
   return lenvImg
     
 # a priori int
@@ -77,7 +79,7 @@ def readSPBin(fileNaf):
     type     = struct.unpack('i', f.read(4))[0]
     channels = struct.unpack('i', f.read(4))[0]
     
-    print(f'image size of: {rows} x {cols}, of type {type} and channel {channels}')
+    # print(f'image size of: {rows} x {cols}, of type {type} and channel {channels}')
     byte = f.read(4*rows*cols*channels)
     a = np.frombuffer(byte, dtype=np.int32)
     a = a.reshape(rows, cols)
@@ -110,12 +112,16 @@ def describeSPNetvladAll(pathSP, pathImg, ext):
   
   parentdir = os.path.dirname(pathImg)
   nameWtExt = os.path.splitext(os.path.basename(pathImg))[0]
-  newFolderName = parentdir+"/" +nameWtExt+"genYAML"
+  newFolderName = parentdir+"/" +nameWtExt+"genYAML_noZeroPadding"
   if not os.path.exists(newFolderName):
     os.mkdir(newFolderName)
+  # assert(len(spPath)==len(imgPath))
 
-  for i in range(0, len(spPath)):
-    sp = readSPBin(spPath[i])
+  for i in range(0, len(imgPath)):
+    start = time.time()
+    sp = readSPBin(pathSP + "/" + os.path.basename(imgPath[i])[:-4]+".bin")
+    # showMat(sp)
+    # plt.show()
     image = cv2.imread(imgPath[i], cv2.IMREAD_GRAYSCALE)
     lfeat = describeSPNetvlad(sp, image, imd)
     use_feats = np.array(lfeat)[:, :use_dim]
@@ -126,6 +132,9 @@ def describeSPNetvladAll(pathSP, pathImg, ext):
     f = cv2.FileStorage(newFolderName+'/'+fnameWtExt+'_NetVladfeat.yml',flags=1)
     f.write(name='mat',val=use_feats)
     f.release()
+    end = time.time()
+    print(f'image No. {i}, time per loop: {end - start:.2f} s,  remaining {(end - start)*(len(imgPath)-i)/60:.2f} mins')
+    print ("\033[A\033[A")
     
   
 
