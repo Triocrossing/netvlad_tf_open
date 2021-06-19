@@ -114,13 +114,13 @@ def describeSPNetvladAll(pathSP, pathImg, ext):
   
   parentdir = os.path.dirname(pathImg)
   nameWtExt = os.path.splitext(os.path.basename(pathImg))[0]
-  newFolderName = parentdir+"/" +nameWtExt+"genYAML_noZeroPaddingSP"
+  newFolderName = parentdir+"/" +nameWtExt+"genYAML_noZeroPadding"
   print("in dir ", newFolderName)
   if not os.path.exists(newFolderName):
     os.mkdir(newFolderName)
   # assert(len(spPath)==len(imgPath))
 
-  for i in range(6450, len(imgPath)):
+  for i in reversed(range(0, len(imgPath))):
     start = time.time()
     sp = readSPBin(pathSP + "/" + os.path.basename(imgPath[i])[:-4]+".bin")
     # showMat(sp)
@@ -137,7 +137,7 @@ def describeSPNetvladAll(pathSP, pathImg, ext):
     f.release()
     end = time.time()
     print(fnameWtExt)
-    print(f'image No. {i}, time per loop: {end - start:.2f} s, remaining {(end - start)*(len(imgPath)-i)/60:.2f} mins')
+    print(f'image No. {i}, time per loop: {end - start:.2f} s, remaining {(end - start)*(i)/60:.2f} mins')
     # print ("\033[A\033[A")
     
   
