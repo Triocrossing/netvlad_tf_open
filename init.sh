@@ -47,7 +47,9 @@ echo "Start computing ..."
 
 source activate netvlad-tf
 # python tests/test.py
-python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/reference-left/left jpg /srv/tempdd/xwang/oldRobotCarSeason/reference-left/Bin_yml
+# python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/reference-left/left jpg /srv/tempdd/xwang/oldRobotCarSeason/reference-left/Bin_yml
+python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/night-rain-rear/rear jpg
+python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/sun-rear/rear jpg
 
 # conda env list
 
