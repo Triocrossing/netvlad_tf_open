@@ -108,7 +108,7 @@ def describeSPNetvlad(sp, img, imd):
     lfeat = lfeat + list(feat)
   return lfeat
 
-def describeSPNetvladAll(pathSP, pathImg, ext):
+def describeSPNetvladAll(pathImg, ext, nSP):
   tf.reset_default_graph()
   imd = ImageDescriptor(is_grayscale=True)
   # we search all bin
@@ -119,17 +119,17 @@ def describeSPNetvladAll(pathSP, pathImg, ext):
   print(imgPath[:5])
   lfeat = []
   use_dim = 4096
-  
+
   parentdir = os.path.dirname(pathImg)
   nameWtExt = os.path.splitext(os.path.basename(pathImg))[0]
-  newFolderName = parentdir+"/" +nameWtExt+"_BiGNetvlad"
+  newFolderName = parentdir+"/nSP_"+str(nSP)+"_BiGNetvlad"+nameWtExt
 
-  newFolderNameYML = parentdir+"/"+nameWtExt+"_SP_yml"
+  newFolderNameYML = parentdir+"/nSP_"+str(nSP)+"_yml_"+nameWtExt
 
   if not os.path.exists(newFolderNameYML):
     os.mkdir(newFolderNameYML)
 
-  newFolderNameCLR = parentdir+"/"+nameWtExt+"_SP_clr"
+  newFolderNameCLR = parentdir+"/nSP_"+str(nSP)+"_clr_"+nameWtExt
   if not os.path.exists(newFolderNameCLR):
     os.mkdir(newFolderNameCLR)
 
@@ -142,7 +142,7 @@ def describeSPNetvladAll(pathSP, pathImg, ext):
     start = time.time()
 
     image = cv2.imread(imgPath[i])
-    slic = SlicAvx2(num_components=60,compactness=30,min_size_factor=0.5)
+    slic = SlicAvx2(num_components=nSP,compactness=30,min_size_factor=0.5)
     sp = slic.iterate(image) # Cluster Map
 
     # sp = readSPBin(pathSP + "/" + os.path.basename(imgPath[i])[:-4]+".bin")
@@ -191,8 +191,8 @@ def main(arg):
 
   imgFolder = arg[0]
   ext = arg[1]
-  spFolder = "" #= arg[2]
-  describeSPNetvladAll(spFolder,imgFolder, ext)
+  nSP = int(arg[2])
+  describeSPNetvladAll(imgFolder, ext, nSP)
   exit()
   # dir to SP
 
