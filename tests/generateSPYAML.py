@@ -16,6 +16,7 @@ import unittest
 import sys
 import glob
 import struct
+from fast_slic.avx2 import SlicAvx2
 
 from netvlad_tf.image_descriptor import ImageDescriptor
 import netvlad_tf.net_from_mat as nfm
@@ -35,6 +36,14 @@ def showMat(mat, figName="", isGrid=True):
   if isGrid:
     plt.grid(color='r', linestyle='-', linewidth=1)
 
+def showMatSP(mat, mat2, figName="", isGrid=True):
+  if figName:
+    plt.figure(figName,figsize=(15,10))
+  else:
+    plt.figure()
+  plt.imshow(mat2,  cmap='gray', vmin=0, vmax=255)
+  plt.imshow(mat, alpha=0.9)
+
 def bbox2(img):
   rows = np.any(img, axis=1)
   cols = np.any(img, axis=0)
@@ -43,7 +52,8 @@ def bbox2(img):
   # print("ymin ymax, xmin xmax")
   return img[ymin:ymax+1, xmin:xmax+1], ymin, ymax+1, xmin, xmax+1
   
-def createEnveloppedArrayBySP(spImg, img, isZeroPadding=False):
+def createEnveloppedArrayBySP(spImg, _img, isZeroPadding=False):
+  img = cv2.cvtColor(_img, cv2.COLOR_BGR2GRAY)
   # print(f'shape sp{np.shape(spImg)}')
   # print(f'shape img{np.shape(img)}')
   assert(np.shape(spImg)==np.shape(img))
@@ -102,7 +112,7 @@ def describeSPNetvladAll(pathSP, pathImg, ext):
   tf.reset_default_graph()
   imd = ImageDescriptor(is_grayscale=True)
   # we search all bin
-  spPath = sorted(glob.glob(os.path.join(pathSP, '*.bin')))
+  # spPath = sorted(glob.glob(os.path.join(pathSP, '*.bin')))
   imgPath = sorted(glob.glob(os.path.join(pathImg, '*.'+ext)))
 
   # print first five for verification
@@ -112,29 +122,54 @@ def describeSPNetvladAll(pathSP, pathImg, ext):
   
   parentdir = os.path.dirname(pathImg)
   nameWtExt = os.path.splitext(os.path.basename(pathImg))[0]
-  newFolderName = parentdir+"/" +nameWtExt+"genYAML_noZeroPadding"
+  newFolderName = parentdir+"/" +nameWtExt+"_BiGNetvlad"
+
+  newFolderNameYML = parentdir+"/"+nameWtExt+"_SP_yml"
+
+  if not os.path.exists(newFolderNameYML):
+    os.mkdir(newFolderNameYML)
+
+  newFolderNameCLR = parentdir+"/"+nameWtExt+"_SP_clr"
+  if not os.path.exists(newFolderNameCLR):
+    os.mkdir(newFolderNameCLR)
+
   if not os.path.exists(newFolderName):
     os.mkdir(newFolderName)
   # assert(len(spPath)==len(imgPath))
-
+  print("...")
   for i in range(0, len(imgPath)):
+    print ("\033[A\033[A")
     start = time.time()
-    sp = readSPBin(pathSP + "/" + os.path.basename(imgPath[i])[:-4]+".bin")
+
+    image = cv2.imread(imgPath[i])
+    slic = SlicAvx2(num_components=60,compactness=30,min_size_factor=0.5)
+    sp = slic.iterate(image) # Cluster Map
+
+    # sp = readSPBin(pathSP + "/" + os.path.basename(imgPath[i])[:-4]+".bin")
     # showMat(sp)
     # plt.show()
-    image = cv2.imread(imgPath[i], cv2.IMREAD_GRAYSCALE)
     lfeat = describeSPNetvlad(sp, image, imd)
     use_feats = np.array(lfeat)[:, :use_dim]
     # print(np.array(use_feats).shape)
     fnameWtExt = os.path.splitext(os.path.basename(imgPath[i]))[0]
     
+    # save SP
+    f = cv2.FileStorage(newFolderNameYML+'/'+fnameWtExt+'.yml',flags=1)
+    f.write(name='mat',val=sp)
+    f.release()
+
+    showMatSP(sp, image, "slic")
+    plt.savefig(newFolderNameCLR+'/sp_'+fnameWtExt+'.jpg')
+    plt.clf()
+
     # save lfeat as result of one image
-    f = cv2.FileStorage(newFolderName+'/'+fnameWtExt+'_NetVladfeat.yml',flags=1)
+    f = cv2.FileStorage(newFolderName+'/'+fnameWtExt+'.yml',flags=1)
     f.write(name='mat',val=use_feats)
     f.release()
     end = time.time()
+    
     print(f'image No. {i}, time per loop: {end - start:.2f} s,  remaining {(end - start)*(len(imgPath)-i)/60:.2f} mins')
-    print ("\033[A\033[A")
+    
     
   
 
@@ -156,7 +191,7 @@ def main(arg):
 
   imgFolder = arg[0]
   ext = arg[1]
-  spFolder = arg[2]
+  spFolder = "" #= arg[2]
   describeSPNetvladAll(spFolder,imgFolder, ext)
   exit()
   # dir to SP
