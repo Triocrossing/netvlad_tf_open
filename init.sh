@@ -1,8 +1,8 @@
 #!/bin/bash
 #patch to be aware of "module" inside a job
-#OAR -l {host ='igrida-abacus15.irisa.fr'}/gpu_device=1,walltime=24:00:0
-#OAR -O /srv/tempdd/xwang/logNetvladSPYAML.%jobid%.output
-#OAR -E /srv/tempdd/xwang/logNetvladSPYAML.%jobid%.error
+#OAR -l {host ='igrida-abacus7.irisa.fr'}/gpu_device=1,walltime=24:00:0
+#OAR -O /srv/tempdd/xwang/log/logNetvladSPYAML.%jobid%.output
+#OAR -E /srv/tempdd/xwang/log/logNetvladSPYAML.%jobid%.error
 
 echo "Start init ..."
 
@@ -48,10 +48,55 @@ echo "Start computing ..."
 source activate netvlad-tf
 # python tests/test.py
 # python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/reference-left/left jpg /srv/tempdd/xwang/oldRobotCarSeason/reference-left/Bin_yml
-python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/night-rain-rear/rear jpg
-python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/sun-rear/rear jpg
+# python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/night-rain-rear/rear jpg 90
+python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/dawn-rear/rear jpg 70
+python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/oc_winter_rear/rear jpg 70
+python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/oc-summer-rear/rear jpg 70
+python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/night-rear/rear jpg 70
+python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/dusk-rear/rear jpg 70
+python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/snow-rear/rear jpg 70
+python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/rain-rear/rear jpg 70
 
-# conda env list
+cd /srv/tempdd/xwang/oldRobotCarSeason/dawn-rear
+mkdir folder_nSP_70 
+mv nSP_70* folder_nSP_70
+zip -r nSP_70.zip folder_nSP_70
+
+cd /srv/tempdd/xwang/oldRobotCarSeason/oc_winter_rear
+mkdir folder_nSP_70 
+mv nSP_70* folder_nSP_70
+zip -r nSP_70.zip folder_nSP_70
+
+cd /srv/tempdd/xwang/oldRobotCarSeason/oc-summer-rear
+mkdir folder_nSP_70 
+mv nSP_70* folder_nSP_70
+zip -r nSP_70.zip folder_nSP_70
+
+cd /srv/tempdd/xwang/oldRobotCarSeason/night-rear
+mkdir folder_nSP_70 
+mv nSP_70* folder_nSP_70
+zip -r nSP_70.zip folder_nSP_70
+
+cd /srv/tempdd/xwang/oldRobotCarSeason/dusk-rear
+mkdir folder_nSP_70 
+mv nSP_70* folder_nSP_70
+zip -r nSP_70.zip folder_nSP_70
+
+cd /srv/tempdd/xwang/oldRobotCarSeason/snow-rear
+mkdir folder_nSP_70 
+mv nSP_70* folder_nSP_70
+zip -r nSP_70.zip folder_nSP_70
+
+cd /srv/tempdd/xwang/oldRobotCarSeason/rain-rear
+mkdir folder_nSP_70 
+mv nSP_70* folder_nSP_70
+zip -r nSP_70.zip folder_nSP_70
+
+# cd /srv/tempdd/xwang/oldRobotCarSeason/sun-rear
+# mkdir folder_nSP_70 
+# mv nSP_70* folder_nSP_70
+# zip -r nSP_70.zip folder_nSP_70
+# # conda env list
 
 # conda activate xwang
 # module load spack/cuda/10.0.130/gcc-8.3.0-kywfj57

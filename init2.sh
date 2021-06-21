@@ -1,8 +1,8 @@
 #!/bin/bash
 #patch to be aware of "module" inside a job
-#OAR -l {host ='igrida-abacus.irisa.fr'}/gpu_device=1,walltime=24:00:0
-#OAR -O /srv/tempdd/xwang/log/logNetvladSPYAML.%jobid%.output
-#OAR -E /srv/tempdd/xwang/log/logNetvladSPYAML.%jobid%.error
+#OAR -l {host ='igrida-abacus15.irisa.fr'}/gpu_device=1,walltime=24:00:0
+#OAR -O /srv/tempdd/xwang/logNetvladSPYAML.%jobid%.output
+#OAR -E /srv/tempdd/xwang/logNetvladSPYAML.%jobid%.error
 
 echo "Start init ..."
 
@@ -47,4 +47,28 @@ echo "Start computing ..."
 
 source activate netvlad-tf
 # python tests/test.py
-python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/reference-left/left jpg /srv/tempdd/xwang/oldRobotCarSeason/reference-left/Bin_yml
+# python tests/generateSPYAML.py /srv/tempdd/xwang/oldRobotCarSeason/reference-left/left jpg /srv/tempdd/xwang/oldRobotCarSeason/reference-left/Bin_yml
+python tests/generateSPYAMLInverse.py /srv/tempdd/xwang/oldRobotCarSeason/overcast-reference/rear jpg 70
+
+cd /srv/tempdd/xwang/oldRobotCarSeason/overcast-reference
+mkdir folder_nSP_70 
+mv nSP_70* folder_nSP_70
+zip -r nSP_70.zip folder_nSP_70
+
+# conda env list
+
+# conda activate xwang
+# module load spack/cuda/10.0.130/gcc-8.3.0-kywfj57
+# module load spack/cudnn/7.6.5.32-10.1-linux-x64/gcc-8.3.0-qryyh6p
+
+# conda env remove --name xwang 
+# conda env create -n xwang python==3.6
+# pip install matplotlib
+# pip install tensorflow-gpu==2.0.0
+# pip install opencv-python
+# pip install tqdm
+# pip uninstall h5py
+# pip install h5py==2.9.0
+
+# cuda 8 for 1.9
+# cudnn 7.1
